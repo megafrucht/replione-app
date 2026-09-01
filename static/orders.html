@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine Bestellungen — Replione</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <a href="/" class="logo">repl<span>i</span>one</a>
+    <nav class="desktop-nav">
+        <a href="/" class="nav-button">Startseite</a>
+        <a href="/order.html" class="nav-button">Bestellen</a>
+        <a href="/orders.html" class="nav-button primary">Meine Bestellungen</a>
+        <a href="/account.html" id="navAccount" class="account-button">Konto</a>
+    </nav>
+</header>
+
+<main class="orders-page">
+    <div class="order-heading">
+        <h1>Meine Bestellungen</h1>
+        <p>Verfolge den Bearbeitungs- und Lieferstatus deiner Aufträge.</p>
+    </div>
+
+    <div id="ordersContainer">
+        <div class="status-msg">Bestellungen werden geladen...</div>
+    </div>
+</main>
+
+<div id="toast" class="toast"></div>
+<footer>replione · Produktbestellungen über Litbuy</footer>
+<script src="/js/app.js"></script>
+<script>
+async function onUserLoaded() {
+    const c = document.getElementById("ordersContainer");
+    if (!currentUser) {
+        c.innerHTML = `
+            <div class="account-card" style="text-align:center;">
+                <p style="margin-bottom:20px;">Bitte melde dich an, um deine Bestellungen zu sehen.</p>
+                <a href="/account.html" class="button button-yellow">Zum Login</a>
+            </div>
+        `;
+        return;
+    }
+
+    try {
+        const res = await fetch("/api/orders/my");
+        const orders = await res.json();
+
+        if (orders.length === 0) {
+            c.innerHTML = `
+                <div class="account-card" style="text-align:center;">
+                    <p style="margin-bottom:20px;">Du hast noch keine Bestellungen aufgegeben.</p>
+                    <a href="/order.html" class="button button-yellow">Jetzt erste Bestellung aufgeben</a>
+                </div>
+            `;
+            return;
+        }
+
+        c.innerHTML = '<div class="order-list">' + orders.map(o => {
+            const stepIdx = Math.max(0, STATUS_STEPS.indexOf(o.status));
+            const trackerHtml = `
+                <div class="status-tracker">
+                    ${STATUS_STEPS.map((step, idx) => `
+                        <div class="tracker-step ${idx <= stepIdx ? 'active' : ''}">
+                            <div class="step-circle">${idx + 1}</div>
+                            <div class="step-label">${step}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            const itemsHtml = o.items.map((it, i) => `
+                <div class="order-item-detail">
+                    <strong>Artikel #${i+1}:</strong> Größe: ${it.size || '—'} | Farbe: ${it.color || '—'}<br>
+                    ${it.link ? `<a href="${it.link}" target="_blank" style="color:#e5b900; font-weight:700;">🔗 Litbuy Link</a><br>` : ''}
+                    ${it.notes ? `<small><b>Notiz:</b> ${it.notes}</small>` : ''}
+                </div>
+            `).join('');
+
+            return `
+                <div class="order-card">
+                    <div class="order-card-top">
+                        <div>
+                            <div class="order-number">${o.order_number}</div>
+                            <div class="order-date">${o.date}</div>
+                        </div>
+                        <div class="status-badge">${o.status}</div>
+                    </div>
+                    ${trackerHtml}
+                    <div class="order-card-products">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            `;
+        }).join('') + '</div>';
+
+    } catch (e) {
+        c.innerHTML = '<div class="status-msg error">Fehler beim Laden deiner Bestellungen.</div>';
+    }
+}
+</script>
+</body>
+</html>

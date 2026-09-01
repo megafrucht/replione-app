@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konto & Sicherheit — Replione</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <a href="/" class="logo">repl<span>i</span>one</a>
+    <nav class="desktop-nav">
+        <a href="/" class="nav-button">Startseite</a>
+        <a href="/order.html" class="nav-button">Bestellen</a>
+        <a href="/orders.html" class="nav-button">Meine Bestellungen</a>
+        <a href="/account.html" id="navAccount" class="account-button primary">Konto</a>
+    </nav>
+</header>
+
+<main class="account-page">
+    <div class="order-heading">
+        <h1 id="accTitle">Konto</h1>
+        <p id="accSubtitle">Verwalte dein Profil und deine Sicherheitseinstellungen.</p>
+    </div>
+
+    <div id="loggedInView" style="display:none;">
+        <div class="account-card">
+            <h2>Mein Profil</h2>
+            <p style="margin: 10px 0;">E-Mail: <b id="userEmail">—</b></p>
+            <p style="margin-bottom: 20px;">Mitglied seit: <span id="userDate">—</span></p>
+
+            <div id="profileMsg"></div>
+            <form onsubmit="updateName(event)">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input id="userNameInput" type="text" required>
+                </div>
+                <button type="submit" class="button button-yellow">Name speichern</button>
+            </form>
+        </div>
+
+        <div class="account-card">
+            <h2>Passwort ändern</h2>
+            <div id="pwdMsg"></div>
+            <form onsubmit="changePassword(event)">
+                <div class="form-group">
+                    <label>Aktuelles Passwort</label>
+                    <input id="oldPwd" type="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Neues Passwort (mind. 8 Zeichen)</label>
+                    <input id="newPwd" type="password" minlength="8" required>
+                </div>
+                <button type="submit" class="button button-yellow">Passwort aktualisieren</button>
+            </form>
+        </div>
+
+        <button class="button button-light" style="width:100%;" onclick="logout()">Abmelden</button>
+    </div>
+
+    <div id="loggedOutView" class="account-card">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:25px;">
+            <button id="tabLogin" class="button button-yellow" onclick="switchAuthTab('login')">Anmelden</button>
+            <button id="tabReg" class="button button-light" onclick="switchAuthTab('reg')">Registrieren</button>
+        </div>
+
+        <div id="authMsg"></div>
+
+        <form id="formLogin" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>E-Mail</label>
+                <input id="loginEmail" type="email" required>
+            </div>
+            <div class="form-group">
+                <label>Passwort</label>
+                <input id="loginPassword" type="password" required>
+            </div>
+            <button type="submit" class="button button-yellow" style="width:100%;">Anmelden</button>
+        </form>
+
+        <form id="formReg" style="display:none;" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label>Vollständiger Name</label>
+                <input id="regName" type="text" required>
+            </div>
+            <div class="form-group">
+                <label>E-Mail</label>
+                <input id="regEmail" type="email" required>
+            </div>
+            <div class="form-group">
+                <label>Passwort (mind. 8 Zeichen)</label>
+                <input id="regPassword" type="password" minlength="8" required>
+            </div>
+            <button type="submit" class="button button-yellow" style="width:100%;">Konto erstellen</button>
+        </form>
+    </div>
+</main>
+
+<div id="toast" class="toast"></div>
+<footer>replione · Produktbestellungen über Litbuy</footer>
+<script src="/js/app.js"></script>
+<script>
+function onUserLoaded() {
+    const inView = document.getElementById("loggedInView");
+    const outView = document.getElementById("loggedOutView");
+    if (currentUser) {
+        inView.style.display = "block";
+        outView.style.display = "none";
+        document.getElementById("userEmail").textContent = currentUser.email;
+        document.getElementById("userDate").textContent = currentUser.created_at;
+        document.getElementById("userNameInput").value = currentUser.name;
+    } else {
+        inView.style.display = "none";
+        outView.style.display = "block";
+    }
+}
+
+function switchAuthTab(tab) {
+    document.getElementById("formLogin").style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById("formReg").style.display = tab === 'reg' ? 'block' : 'none';
+    document.getElementById("tabLogin").className = tab === 'login' ? 'button button-yellow' : 'button button-light';
+    document.getElementById("tabReg").className = tab === 'reg' ? 'button button-yellow' : 'button button-light';
+}
+
+async function handleLogin(e) {
+    e.preventDefault();
+    const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: document.getElementById("loginEmail").value,
+            password: document.getElementById("loginPassword").value
+        })
+    });
+    const data = await res.json();
+    if (res.ok) { window.location.href = "/orders.html"; }
+    else { document.getElementById("authMsg").innerHTML = `<div class="status-msg error">${data.detail}</div>`; }
+}
+
+async function handleRegister(e) {
+    e.preventDefault();
+    const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: document.getElementById("regName").value,
+            email: document.getElementById("regEmail").value,
+            password: document.getElementById("regPassword").value
+        })
+    });
+    const data = await res.json();
+    if (res.ok) { window.location.href = "/orders.html"; }
+    else { document.getElementById("authMsg").innerHTML = `<div class="status-msg error">${data.detail}</div>`; }
+}
+
+async function updateName(e) {
+    e.preventDefault();
+    const res = await fetch("/api/auth/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: document.getElementById("userNameInput").value })
+    });
+    const data = await res.json();
+    if (res.ok) {
+        document.getElementById("profileMsg").innerHTML = `<div class="status-msg success">Name aktualisiert.</div>`;
+        loadCurrentUser();
+    } else {
+        document.getElementById("profileMsg").innerHTML = `<div class="status-msg error">${data.detail}</div>`;
+    }
+}
+
+async function changePassword(e) {
+    e.preventDefault();
+    const res = await fetch("/api/auth/password", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            old_password: document.getElementById("oldPwd").value,
+            new_password: document.getElementById("newPwd").value
+        })
+    });
+    const data = await res.json();
+    if (res.ok) {
+        document.getElementById("pwdMsg").innerHTML = `<div class="status-msg success">Passwort geändert.</div>`;
+        document.getElementById("oldPwd").value = "";
+        document.getElementById("newPwd").value = "";
+    } else {
+        document.getElementById("pwdMsg").innerHTML = `<div class="status-msg error">${data.detail}</div>`;
+    }
+}
+
+async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.href = "/account.html";
+}
+</script>
+</body>
+</html>

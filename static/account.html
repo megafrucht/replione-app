@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konto — Replione</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">repl<span>i</span>one</a>
+    <nav class="desktop-nav">
+        <a href="/" class="nav-button">Startseite</a>
+        <a href="/order.html" class="nav-button">Bestellen</a>
+        <a href="/account.html" class="account-button primary">Konto</a>
+        <button class="cart-button" onclick="openCart()" aria-label="Warenkorb">
+            <span class="cart-icon">🛒</span>
+            <span id="headerCartBadge" class="cart-badge">0</span>
+        </button>
+    </nav>
+    <button id="mobileMenuButton" class="mobile-menu-button" onclick="toggleMobileMenu()" aria-label="Menü">
+        <span></span><span></span><span></span>
+    </button>
+</header>
+
+<div id="mobileMenu" class="mobile-menu">
+    <a href="/">Startseite</a>
+    <a href="/order.html">Bestellen</a>
+    <a href="/orders.html">Meine Bestellungen</a>
+    <a href="/account.html">Konto</a>
+    <button onclick="toggleMobileMenu(); openCart();">🛒 Warenkorb <span id="mobileCartCount">(0)</span></button>
+</div>
+
+<main class="account-page">
+    <div class="order-heading">
+        <h1>Konto</h1>
+        <p id="accountSubtitle">Melde dich an oder erstelle dein Konto.</p>
+    </div>
+
+    <div class="account-card">
+        <div id="accountLoggedIn" style="display:none;">
+            <div class="account-status" id="accountUserStatus" style="display:block;"></div>
+            <a href="/orders.html" class="button button-yellow" style="width:100%;">Meine Bestellungen</a>
+            <button class="button button-light" style="width:100%; margin-top:10px;" onclick="logoutUser()">Abmelden</button>
+        </div>
+
+        <div id="accountLoggedOut">
+            <div class="account-tabs">
+                <button id="loginTab" class="account-tab active" onclick="switchTab('login')">Anmelden</button>
+                <button id="registerTab" class="account-tab" onclick="switchTab('register')">Registrieren</button>
+            </div>
+
+            <div id="accountMessage" class="account-status"></div>
+
+            <form id="loginForm" onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="loginEmail">E-Mail</label>
+                    <input id="loginEmail" type="email" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Passwort</label>
+                    <input id="loginPassword" type="password" autocomplete="current-password" required>
+                </div>
+                <button class="button button-yellow" style="width:100%;" type="submit">Anmelden</button>
+            </form>
+
+            <form id="registerForm" style="display:none;" onsubmit="register(event)">
+                <div class="form-group">
+                    <label for="registerName">Name</label>
+                    <input id="registerName" type="text" autocomplete="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">E-Mail</label>
+                    <input id="registerEmail" type="email" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Passwort</label>
+                    <input id="registerPassword" type="password" autocomplete="new-password" minlength="8" required>
+                </div>
+                <button class="button button-yellow" style="width:100%;" type="submit">Konto erstellen</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<div id="cartModal" class="modal-overlay" onclick="closeCartOutside(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Warenkorb</h2>
+            <button class="close-button" onclick="closeCart()">×</button>
+        </div>
+        <div id="modalCartItems"></div>
+        <a href="/order.html" class="button button-yellow" style="width:100%; margin-top:20px;">Bestellung prüfen</a>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer>replione · Produktbestellungen über Litbuy</footer>
+
+<script src="/js/app.js"></script>
+<script>
+function onUserLoaded() {
+    const loggedIn = document.getElementById("accountLoggedIn");
+    const loggedOut = document.getElementById("accountLoggedOut");
+    const subtitle = document.getElementById("accountSubtitle");
+    const userStatus = document.getElementById("accountUserStatus");
+
+    if (currentUser) {
+        loggedIn.style.display = "block";
+        loggedOut.style.display = "none";
+        subtitle.textContent = "Du bist angemeldet.";
+        userStatus.textContent = "Angemeldet als " + (currentUser.name || currentUser.email);
+    } else {
+        loggedIn.style.display = "none";
+        loggedOut.style.display = "block";
+        subtitle.textContent = "Melde dich an oder erstelle dein Konto.";
+    }
+}
+
+function switchTab(tab) {
+    document.getElementById("loginForm").style.display = tab === "login" ? "block" : "none";
+    document.getElementById("registerForm").style.display = tab === "register" ? "block" : "none";
+    document.getElementById("loginTab").className = "account-tab" + (tab === "login" ? " active" : "");
+    document.getElementById("registerTab").className = "account-tab" + (tab === "register" ? " active" : "");
+    document.getElementById("accountMessage").style.display = "none";
+}
+
+async function login(e) {
+    e.preventDefault();
+    try {
+        const res = await apiFetch("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+                email: document.getElementById("loginEmail").value.trim(),
+                password: document.getElementById("loginPassword").value
+            })
+        });
+        if (!res.ok) throw new Error(await getErrorMessage(res));
+        const data = await res.json();
+        currentUser = data.user;
+        showToast("Du bist angemeldet.");
+        setTimeout(() => window.location.href = "/orders.html", 500);
+    } catch (err) {
+        const msg = document.getElementById("accountMessage");
+        msg.textContent = err.message || "Anmeldung fehlgeschlagen.";
+        msg.style.display = "block";
+    }
+}
+
+async function register(e) {
+    e.preventDefault();
+    try {
+        const res = await apiFetch("/auth/register", {
+            method: "POST",
+            body: JSON.stringify({
+                name: document.getElementById("registerName").value.trim(),
+                email: document.getElementById("registerEmail").value.trim(),
+                password: document.getElementById("registerPassword").value
+            })
+        });
+        if (!res.ok) throw new Error(await getErrorMessage(res));
+        const data = await res.json();
+        currentUser = data.user;
+        showToast("Konto wurde erstellt.");
+        setTimeout(() => window.location.href = "/orders.html", 500);
+    } catch (err) {
+        const msg = document.getElementById("accountMessage");
+        msg.textContent = err.message || "Registrierung fehlgeschlagen.";
+        msg.style.display = "block";
+    }
+}
+
+async function logoutUser() {
+    await apiFetch("/auth/logout", { method: "POST" });
+    currentUser = null;
+    onUserLoaded();
+    showToast("Du wurdest abgemeldet.");
+}
+</script>
+</body>
+</html>

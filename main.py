@@ -9,6 +9,21 @@ from sqlalchemy.orm import Session
 from database import engine, Base, get_db
 import models
 from auth import hash_password, verify_password, create_access_token, get_current_user_id
+
+from auth import get_current_user_id
+async def get_current_user(token: str, db: Session):
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        # We can re-use the get_current_user_id since it expects a token string
+        user_id = get_current_user_id(token)
+        user = db.query(models.User).filter(models.User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        return user
+    except Exception:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
 from email_bot import send_order_confirmation
 
 Base.metadata.create_all(bind=engine)
@@ -218,8 +233,35 @@ def delete_order(order_id: int, db: Session = Depends(get_db), _: None = Depends
     return {"message": "Order deleted"}
 
 
+
+# ==========================================
+# FILE UPLOAD ROUTE
+# ==========================================
+import os
+import shutil
+import uuid
+from fastapi import UploadFile, File
+
+UPLOAD_DIR = "static/uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@app.post("/api/upload")
+def upload_image(request: Request, file: UploadFile = File(...)):
+    # token = request.cookies.get("access_token")
+    # For now, allow uploads unauthenticated or handle auth later since the form might not pass cookie correctly in fetch
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'png'
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    file_path = os.path.join(UPLOAD_DIR, filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {"url": f"/uploads/{filename}"}
+
 # --- STATIC FILES ---
 app.mount("/css", StaticFiles(directory="static/css"), name="css")
+app.mount("/images", StaticFiles(directory="static/images"), name="images")
+app.mount("/uploads", StaticFiles(directory="static/uploads"), name="uploads")
 app.mount("/js", StaticFiles(directory="static/js"), name="js")
 
 @app.get("/")

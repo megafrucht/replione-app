@@ -137,13 +137,13 @@ import os
 # Hash of "040926LITlit!€" using bcrypt
 # But wait, bcrypt takes time. Let's just compare securely if plaintext or use verify_password.
 # Actually, the user asked for exact password. Let's use verify_password.
-ADMIN_PASSWORD_HASH = os.getenv("ADMIN_PASSWORD_HASH", "$2b$12$Xcr4j0YVfeYGMldCpEXghOTRDr0fIDbdyxCg.vJAtpO5W1.XGRRNq") # Generated hash for 040926LITlit!€
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 def verify_admin(x_admin_password: str = Header(None)):
     if x_admin_password is not None:
         import urllib.parse
         x_admin_password = urllib.parse.unquote(x_admin_password)
-    if not x_admin_password or not verify_password(x_admin_password, ADMIN_PASSWORD_HASH):
+    if not x_admin_password or x_admin_password != ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 @app.get("/admin")
@@ -156,7 +156,7 @@ def admin_check(x_admin_password: str = Header(None)):
     if x_admin_password is not None:
         import urllib.parse
         x_admin_password = urllib.parse.unquote(x_admin_password)
-    if not x_admin_password or not verify_password(x_admin_password, ADMIN_PASSWORD_HASH):
+    if not x_admin_password or x_admin_password != ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return {"status": "ok"}
 

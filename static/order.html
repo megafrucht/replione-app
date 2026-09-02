@@ -13,9 +13,7 @@
     </a>
 
     <div class="header-right">
-        <a href="/order.html" class="nav-button primary desktop-only">Bestellen</a>
-        <a href="/account.html" id="navAccount" class="button button-yellow login-btn desktop-only">Login</a>
-        <div class="burger-menu" id="burgerMenu">
+        <div class="burger-menu" id="burgerMenu" style="display: flex !important;">
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
@@ -24,16 +22,16 @@
 
     <nav class="nav-links" id="navLinks">
         <a href="/" class="nav-button">Startseite</a>
-        <a href="/order.html" class="nav-button primary mobile-only">Bestellen</a>
+        <a href="/order.html" class="nav-button primary">Bestellen</a>
         <a href="/orders.html" class="nav-button">Meine Bestellungen</a>
         <a href="/cart.html" class="nav-button">Warenkorb (<span id="headerCartBadge">0</span>)</a>
-        <a href="/account.html" id="navAccountMobile" class="button button-yellow login-btn mobile-only">Login</a>
+        <a href="/account.html" id="navAccountMobile" class="button button-yellow login-btn">Login</a>
     </nav>
 </header>
 
 <main class="order-page">
     <div class="order-heading">
-        <h1>Bestellung aufgeben</h1>
+        <h1>Produkt hinzufügen</h1>
         <p>Gib die Produktdetails ein und sende deinen Auftrag ab.</p>
     </div>
 
@@ -56,7 +54,7 @@
             <label for="notes">Spezielle Wünsche / Notizen</label>
             <textarea id="notes" placeholder="z. B. Farbcode oder spezifische Variante..."></textarea>
         </div>
-        <button id="submitBtn" class="button button-yellow" style="width:100%;" onclick="submitOrder()">Bestellung absenden</button>
+        <button id="submitBtn" class="button button-yellow" style="width:100%;" onclick="submitOrder()">Zum Warenkorb hinzufügen</button>
 
     </div> <!-- end of order-box -->
 
@@ -102,7 +100,7 @@ async function submitOrder() {
 
     const btn = document.getElementById("submitBtn");
     btn.disabled = true;
-    btn.textContent = "Wird übermittelt...";
+    btn.textContent = "Wird hinzugefügt...";
 
     try {
         const res = await fetch("/api/orders", {
@@ -121,7 +119,7 @@ async function submitOrder() {
     } catch (e) {
         showToast(e.message);
         btn.disabled = false;
-        btn.textContent = "Bestellung absenden";
+        btn.textContent = "Zum Warenkorb hinzufügen";
     }
 }
 </script>

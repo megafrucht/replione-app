@@ -23,6 +23,8 @@ async function loadCurrentUser() {
             currentUser = await res.json();
             const navAccount = document.getElementById("navAccount");
             if (navAccount) navAccount.textContent = "👤 " + currentUser.name.split(" ")[0];
+            const navAccountMobile = document.getElementById("navAccountMobile");
+            if (navAccountMobile) navAccountMobile.textContent = "👤 " + currentUser.name.split(" ")[0];
         } else {
             currentUser = null;
         }

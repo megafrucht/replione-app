@@ -137,7 +137,7 @@ import os
 # Hash of "040926LITlit!€" using bcrypt
 # But wait, bcrypt takes time. Let's just compare securely if plaintext or use verify_password.
 # Actually, the user asked for exact password. Let's use verify_password.
-ADMIN_PASSWORD_HASH = os.getenv("ADMIN_PASSWORD_HASH", "$2b$12$KkQzU9x/D.26TjU50hI6iOsE.r0QJ/7.nU7w9Z6gq460y.2x/0v3q") # Generated hash for 040926LITlit!€
+ADMIN_PASSWORD_HASH = os.getenv("ADMIN_PASSWORD_HASH", "$2b$12$Xcr4j0YVfeYGMldCpEXghOTRDr0fIDbdyxCg.vJAtpO5W1.XGRRNq") # Generated hash for 040926LITlit!€
 
 def verify_admin(x_admin_password: str = Header(None)):
     if x_admin_password is not None:

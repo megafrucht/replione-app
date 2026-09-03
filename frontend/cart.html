@@ -80,6 +80,7 @@ async function renderCart() {
                     <small>Größe: ${item.size || '-'} | Farbe: ${item.color || '-'}</small>
                     ${item.notes ? `<div style="margin-top:5px; font-size:13px; color:#555;">Notiz: ${item.notes}</div>` : ''}
                 </div>
+                <button onclick="editCartItem(${item.id})" class="button button-light" style="padding: 5px 10px; min-height:30px; font-size:12px; margin-right:5px;">Bearbeiten</button>
                 <button onclick="removeFromCart(${item.id})" class="button button-light" style="padding: 5px 10px; min-height:30px; font-size:12px;">Entfernen</button>
             </div>
             ${item.screenshot_id ? `<img src="/uploads/${item.screenshot_id}" style="max-height: 100px; margin-top:10px; border-radius:8px;">` : ''}

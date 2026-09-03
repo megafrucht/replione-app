@@ -54,11 +54,15 @@ async function checkAdminAuth() {
     }
 }
 
+
+let ordersCache = [];
+
 async function loadAdminData() {
     const [users, orders] = await Promise.all([
         apiAdmin("/api/admin/users"),
         apiAdmin("/api/admin/orders")
     ]);
+    ordersCache = orders;
 
     const ut = document.querySelector("#users-table tbody");
     ut.innerHTML = "";
@@ -89,9 +93,49 @@ async function loadAdminData() {
                 </select>
             </td>
             <td>${new Date(o.created_at).toLocaleDateString()}</td>
-            <td><button onclick="alert('Details für ' + '${o.order_number}')">Details</button></td>
+            <td><button onclick="showOrderDetails('${o.order_number}')">Details</button></td>
         </tr>`;
     });
+}
+
+function showOrderDetails(orderNum) {
+    const order = ordersCache.find(o => o.order_number === orderNum);
+    if(!order) return;
+
+    let modal = document.getElementById("admin-order-modal");
+    if(!modal) {
+        modal = document.createElement("div");
+        modal.id = "admin-order-modal";
+        modal.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; justify-content:center; align-items:center; padding:20px; overflow-y:auto;";
+        document.body.appendChild(modal);
+    }
+
+    let itemsHtml = order.items.map(i => `
+        <div style="background:#f1f1f1; padding:15px; margin-bottom:10px; border-radius:8px;">
+            <strong>${i.product_name}</strong>
+            <div style="font-size:14px; margin:5px 0;">
+                Größe: ${i.size || '-'} | Farbe: ${i.color || '-'}<br>
+                Link: ${i.product_link ? `<a href="${i.product_link}" target="_blank">Öffnen</a>` : '-'}<br>
+                Notizen: ${i.notes || '-'}
+            </div>
+            ${i.screenshot_id ? `<a href="/api/upload/${i.screenshot_id}" target="_blank"><img src="/api/upload/${i.screenshot_id}" style="max-height:150px; cursor:pointer;"></a>` : ''}
+        </div>
+    `).join('');
+
+    modal.innerHTML = `
+        <div style="background:white; padding:20px; border-radius:12px; width:100%; max-width:800px; max-height:90vh; overflow-y:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>Details: ${order.order_number}</h2>
+                <button onclick="document.getElementById('admin-order-modal').style.display='none'" style="padding:5px 10px; cursor:pointer;">Schließen</button>
+            </div>
+            <p><strong>Kunde:</strong> ${order.user_name} (${order.user_email})</p>
+            <p><strong>Status:</strong> ${order.status}</p>
+            <p><strong>Datum:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+            <h3>Produkte (${order.items.length})</h3>
+            ${itemsHtml}
+        </div>
+    `;
+    modal.style.display = 'flex';
 }
 
 async function updateOrderStatus(orderNum, status) {

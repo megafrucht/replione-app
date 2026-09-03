@@ -52,3 +52,37 @@ function updateCartBadges() {
         b.textContent = cart.length;
     });
 }
+
+
+async function editCartItem(id) {
+    const item = cart.find(i => i.id === id);
+    if(!item) return;
+
+    const newName = prompt("Produktname:", item.product_name);
+    if(newName === null) return;
+
+    const newSize = prompt("Größe:", item.size || "");
+    if(newSize === null) return;
+
+    const newColor = prompt("Farbe:", item.color || "");
+    if(newColor === null) return;
+
+    const newNotes = prompt("Notizen:", item.notes || "");
+    if(newNotes === null) return;
+
+    try {
+        await api(`/api/cart/items/${id}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                product_name: newName,
+                size: newSize,
+                color: newColor,
+                notes: newNotes
+            })
+        });
+        showToast("Artikel aktualisiert", "success");
+        await loadCart();
+    } catch(e) {
+        showToast(e.message, "error");
+    }
+}

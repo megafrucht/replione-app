@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replione – Mein Konto</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            repl<span>i</span>one
+        </a>
+
+        <nav class="desktop-navigation">
+            <a href="index.html">Startseite</a>
+            <a href="bestellen.html">Bestellen</a>
+            <a href="bestellungen.html">Meine Bestellungen</a>
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="warenkorb.html" class="cart-button">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count">0</span>
+            </a>
+
+            <a href="account.html" class="account-button">
+                <span class="user-icon">👤</span>
+            </a>
+
+            <button class="burger-button" id="burgerButton">
+                <span class="burger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+</header>
+
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <div class="mobile-menu-header">
+        <strong>Menü</strong>
+        <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+    </div>
+
+    <nav>
+        <a href="index.html">Startseite</a>
+        <a href="bestellen.html">Bestellen</a>
+        <a href="warenkorb.html">Warenkorb</a>
+        <a href="bestellungen.html">Meine Bestellungen</a>
+        <a href="account.html">Mein Konto</a>
+    </nav>
+
+</div>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+
+
+<main>
+
+<section class="page-header">
+
+    <div class="eyebrow">Mein Konto</div>
+
+    <h1>
+        Hallo!
+    </h1>
+
+    <p>
+        Verwalte dein Konto und deine Bestellungen.
+    </p>
+
+</section>
+
+
+<section class="account-grid">
+
+    <div class="account-card">
+
+        <div class="account-card-icon">
+            👤
+        </div>
+
+        <div>
+            <small>Name</small>
+            <strong id="accountName">
+                Demo Benutzer
+            </strong>
+        </div>
+
+    </div>
+
+
+    <div class="account-card">
+
+        <div class="account-card-icon">
+            ✉️
+        </div>
+
+        <div>
+            <small>E-Mail</small>
+            <strong id="accountEmail">
+                demo@example.com
+            </strong>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="account-actions">
+
+    <a href="bestellungen.html" class="action-card">
+
+        <span>📦</span>
+
+        <div>
+            <strong>Meine Bestellungen</strong>
+            <small>Bestellungen und Status ansehen</small>
+        </div>
+
+        <b>→</b>
+
+    </a>
+
+
+    <a href="bestellen.html" class="action-card">
+
+        <span>➕</span>
+
+        <div>
+            <strong>Neue Bestellung</strong>
+            <small>Ein neues Produkt hinzufügen</small>
+        </div>
+
+        <b>→</b>
+
+    </a>
+
+
+    <button id="logoutButton" class="action-card action-card-danger">
+
+        <span>↪️</span>
+
+        <div>
+            <strong>Abmelden</strong>
+            <small>Aus deinem Konto ausloggen</small>
+        </div>
+
+        <b>→</b>
+
+    </button>
+
+</section>
+
+</main>
+
+
+<footer class="site-footer">
+    <div class="footer-inner">
+
+        <div class="footer-brand">
+            <a href="index.html" class="logo">
+                repl<span>i</span>one
+            </a>
+            <p>Einfach Produkte vermitteln.</p>
+        </div>
+
+    </div>
+</footer>
+
+
+<script src="js/navigation.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+
+</body>
+</html>

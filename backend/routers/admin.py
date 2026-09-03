@@ -34,9 +34,6 @@ def admin_login(x_admin_password: str = Header(None)):
 
 @router.post("/logout")
 def admin_logout():
-    response = Response(content='{"status":"ok"}', media_type="application/json")
-    response.delete_cookie(key="admin_access_token")
-    return response
     from fastapi import Response
     response = Response(content='{"status":"ok"}', media_type="application/json")
     response.delete_cookie(key="admin_access_token")

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warenkorb — Replione</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <a href="/" class="logo">
+        <img src="/images/logo.png" alt="Replione Logo" style="height: 35px; vertical-align: middle;">
+    </a>
+
+    <div class="header-right">
+        <div class="burger-menu" id="burgerMenu" style="display: flex !important;">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+
+    <nav class="nav-links" id="navLinks">
+        <a href="/" class="nav-button">Startseite</a>
+        <a href="/order.html" class="nav-button primary">Bestellen</a>
+        <a href="/orders.html" class="nav-button">Meine Bestellungen</a>
+        <a href="/cart.html" class="nav-button">Warenkorb (<span id="headerCartBadge">0</span>)</a>
+        <a href="/account.html" id="navAccountMobile" class="button button-yellow login-btn">Login</a>
+    </nav>
+</header>
+
+<main class="order-page">
+    <div class="order-heading">
+        <h1>Dein Warenkorb</h1>
+    </div>
+
+    <div class="order-box">
+        <div id="cartItemsContainer" class="order-list">
+            <!-- Cart items will be loaded here -->
+        </div>
+        <button id="checkoutBtn" class="button button-yellow" style="width:100%; margin-top:20px; display:none;" onclick="checkoutCart()">Kostenpflichtig bestellen</button>
+    </div>
+</main>
+
+<div id="toast" class="toast"></div>
+<footer>replione · Produktbestellungen über Litbuy</footer>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/navigation.js"></script>
+<script src="/js/app.js"></script>
+
+<script>
+
+async function renderCart() {
+    const container = document.getElementById("cartItemsContainer");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+
+    if (!currentUser) {
+        container.innerHTML = "Bitte melde dich an, um deinen Warenkorb zu sehen.";
+        return;
+    }
+
+    if (cart.length === 0) {
+        container.innerHTML = "Dein Warenkorb ist leer.";
+        checkoutBtn.style.display = "none";
+        return;
+    }
+
+    checkoutBtn.style.display = "block";
+    container.innerHTML = "";
+    cart.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <strong>${item.product_name}</strong><br>
+                    <small>Größe: ${item.size || '-'} | Farbe: ${item.color || '-'}</small>
+                    ${item.notes ? `<div style="margin-top:5px; font-size:13px; color:#555;">Notiz: ${item.notes}</div>` : ''}
+                </div>
+                <button onclick="editCartItem(${item.id})" class="button button-light" style="padding: 5px 10px; min-height:30px; font-size:12px; margin-right:5px;">Bearbeiten</button>
+                <button onclick="removeFromCart(${item.id})" class="button button-light" style="padding: 5px 10px; min-height:30px; font-size:12px;">Entfernen</button>
+            </div>
+            ${item.screenshot_id ? `<img src="/uploads/${item.screenshot_id}" style="max-height: 100px; margin-top:10px; border-radius:8px;">` : ''}
+        `;
+        container.appendChild(card);
+    });
+}
+
+async function checkoutCart() {
+    const btn = document.getElementById("checkoutBtn");
+    btn.disabled = true;
+    btn.textContent = "Wird verarbeitet...";
+
+    try {
+        await api("/api/orders/checkout", { method: "POST" });
+        showToast("Bestellung erfolgreich!", "success");
+        await loadCart();
+        setTimeout(() => window.location.href = "/orders.html", 1000);
+    } catch(e) {
+        showToast(e.message, "error");
+        btn.disabled = false;
+        btn.textContent = "Kostenpflichtig bestellen";
+    }
+}
+
+window.onUserLoaded = renderCart;
+
+</script>
+</body>
+</html>

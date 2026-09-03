@@ -1,1 +1,9 @@
-
+fastapi
+uvicorn[standard]
+sqlalchemy
+bcrypt
+pyjwt
+python-multipart
+pydantic[email]
+psycopg2-binary
+supabase

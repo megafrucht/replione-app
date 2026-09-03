@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replione – Bestellen</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            repl<span>i</span>one
+        </a>
+
+        <nav class="desktop-navigation">
+            <a href="index.html">Startseite</a>
+            <a href="bestellen.html" class="active">Bestellen</a>
+            <a href="bestellungen.html">Meine Bestellungen</a>
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="warenkorb.html" class="cart-button" aria-label="Warenkorb">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count">0</span>
+            </a>
+
+            <a href="account.html" class="account-button" aria-label="Mein Account">
+                <span class="user-icon">👤</span>
+            </a>
+
+            <button class="burger-button" id="burgerButton" aria-label="Menü öffnen">
+                <span class="burger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+</header>
+
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <div class="mobile-menu-header">
+        <strong>Menü</strong>
+        <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+    </div>
+
+    <nav>
+        <a href="index.html">Startseite</a>
+        <a href="bestellen.html">Bestellen</a>
+        <a href="warenkorb.html">Warenkorb</a>
+        <a href="bestellungen.html">Meine Bestellungen</a>
+        <a href="account.html">Mein Konto</a>
+    </nav>
+
+</div>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+
+
+<main>
+
+<section class="page-header">
+
+    <div class="eyebrow">Neue Bestellung</div>
+
+    <h1>
+        Produkt bestellen
+    </h1>
+
+    <p>
+        Übermittle uns dein Produkt. Wir kümmern uns anschließend um die Bestellung.
+    </p>
+
+</section>
+
+
+<section class="order-layout">
+
+    <div class="form-card">
+
+        <form id="orderForm">
+
+            <div class="form-section">
+
+                <div class="form-section-title">
+                    Produktinformationen
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productName">
+                        Produktname
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productName"
+                        name="productName"
+                        placeholder="z. B. Schwarzer Hoodie"
+                        required
+                    >
+
+                    <small>
+                        Gib deinem Produkt einen eindeutigen Namen.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productLink">
+                        Produktlink
+                        <span class="optional">Optional</span>
+                    </label>
+
+                    <input
+                        type="url"
+                        id="productLink"
+                        name="productLink"
+                        placeholder="https://..."
+                    >
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="productSize">
+                            Größe
+                            <span class="optional">Optional</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="productSize"
+                            name="productSize"
+                            placeholder="z. B. L"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="productColor">
+                            Farbe
+                            <span class="optional">Optional</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="productColor"
+                            name="productColor"
+                            placeholder="z. B. Schwarz"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <div class="form-section-title">
+                    Produktnachweis
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productScreenshot">
+                        Screenshot
+                        <span class="required">*</span>
+                    </label>
+
+                    <div class="upload-box">
+
+                        <input
+                            type="file"
+                            id="productScreenshot"
+                            name="productScreenshot"
+                            accept="image/jpeg,image/png,image/webp"
+                            required
+                        >
+
+                        <div class="upload-content">
+                            <div class="upload-icon">📸</div>
+
+                            <strong>
+                                Screenshot auswählen
+                            </strong>
+
+                            <span>
+                                JPG, PNG oder WEBP
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="image-preview"
+                    id="imagePreview"
+                    hidden
+                >
+                    <img id="previewImage" alt="Vorschau des Screenshots">
+
+                    <div>
+                        <strong>Screenshot ausgewählt</strong>
+                        <span id="previewFileName"></span>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <div class="form-section-title">
+                    Weitere Informationen
+                </div>
+
+                <div class="form-group">
+
+                    <label for="productNotes">
+                        Hinweise
+                        <span class="optional">Optional</span>
+                    </label>
+
+                    <textarea
+                        id="productNotes"
+                        name="productNotes"
+                        rows="5"
+                        placeholder="Gibt es etwas, das wir wissen sollten?"
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a href="index.html" class="button button-secondary">
+                    Abbrechen
+                </a>
+
+                <button type="submit" class="button button-primary">
+                    In den Warenkorb
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <aside class="info-card">
+
+        <div class="info-icon">💡</div>
+
+        <h3>
+            Wichtig
+        </h3>
+
+        <p>
+            Damit wir dein Produkt eindeutig identifizieren können,
+            benötigen wir einen Produktnamen und einen Screenshot.
+        </p>
+
+        <ul>
+            <li>Produktname ist erforderlich</li>
+            <li>Screenshot ist erforderlich</li>
+            <li>Produktlink ist optional</li>
+            <li>Größe und Farbe sind optional</li>
+        </ul>
+
+    </aside>
+
+</section>
+
+</main>
+
+
+<footer class="site-footer">
+    <div class="footer-inner">
+
+        <div class="footer-brand">
+            <a href="index.html" class="logo">
+                repl<span>i</span>one
+            </a>
+            <p>Einfach Produkte vermitteln.</p>
+        </div>
+
+    </div>
+</footer>
+
+
+<script src="js/navigation.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/bestellen.js"></script>
+
+</body>
+</html>

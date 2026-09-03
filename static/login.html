@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replione – Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            repl<span>i</span>one
+        </a>
+
+        <nav class="desktop-navigation">
+            <a href="index.html">Startseite</a>
+            <a href="bestellen.html">Bestellen</a>
+            <a href="bestellungen.html">Meine Bestellungen</a>
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="warenkorb.html" class="cart-button">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count">0</span>
+            </a>
+
+            <a href="account.html" class="account-button">
+                <span class="user-icon">👤</span>
+            </a>
+
+            <button class="burger-button" id="burgerButton">
+                <span class="burger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+</header>
+
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <div class="mobile-menu-header">
+        <strong>Menü</strong>
+        <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+    </div>
+
+    <nav>
+        <a href="index.html">Startseite</a>
+        <a href="bestellen.html">Bestellen</a>
+        <a href="warenkorb.html">Warenkorb</a>
+        <a href="bestellungen.html">Meine Bestellungen</a>
+        <a href="account.html">Mein Konto</a>
+    </nav>
+
+</div>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+
+
+<main>
+
+<section class="auth-section">
+
+    <div class="auth-card">
+
+        <div class="auth-heading">
+
+            <div class="eyebrow">Mein Konto</div>
+
+            <h1 id="authTitle">
+                Willkommen zurück
+            </h1>
+
+            <p id="authSubtitle">
+                Melde dich an, um deine Bestellungen zu verwalten.
+            </p>
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="loginEmail">
+                    E-Mail-Adresse
+                </label>
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    required
+                    placeholder="deine@email.de"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="loginPassword">
+                    Passwort
+                </label>
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    required
+                    placeholder="••••••••"
+                >
+
+            </div>
+
+
+            <button type="submit" class="button button-primary button-full">
+                Anmelden
+            </button>
+
+        </form>
+
+
+        <!-- REGISTER -->
+
+        <form id="registerForm" hidden>
+
+            <div class="form-group">
+
+                <label for="registerName">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="registerName"
+                    required
+                    placeholder="Dein Name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="registerEmail">
+                    E-Mail-Adresse
+                </label>
+
+                <input
+                    type="email"
+                    id="registerEmail"
+                    required
+                    placeholder="deine@email.de"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="registerPassword">
+                    Passwort
+                </label>
+
+                <input
+                    type="password"
+                    id="registerPassword"
+                    required
+                    placeholder="••••••••"
+                >
+
+            </div>
+
+
+            <button type="submit" class="button button-primary button-full">
+                Konto erstellen
+            </button>
+
+        </form>
+
+
+        <div class="auth-switch">
+
+            <span id="authSwitchText">
+                Noch kein Konto?
+            </span>
+
+            <button type="button" id="authSwitchButton">
+                Konto erstellen
+            </button>
+
+        </div>
+
+
+        <div id="authMessage" class="form-message" hidden></div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script src="js/navigation.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+
+</body>
+</html>

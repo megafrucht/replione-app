@@ -44,60 +44,48 @@
 
 <div id="toast" class="toast"></div>
 <footer>replione · Produktbestellungen über Litbuy</footer>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/navigation.js"></script>
 <script src="/js/app.js"></script>
+
 <script>
+
 async function renderCart() {
     const container = document.getElementById("cartItemsContainer");
     const checkoutBtn = document.getElementById("checkoutBtn");
-    container.innerHTML = "Lade Warenkorb...";
 
     if (!currentUser) {
         container.innerHTML = "Bitte melde dich an, um deinen Warenkorb zu sehen.";
         return;
     }
 
-    try {
-        const res = await fetch("/api/cart");
-        if (res.ok) {
-            const items = await res.json();
-            if (items.length === 0) {
-                container.innerHTML = "Dein Warenkorb ist leer.";
-                checkoutBtn.style.display = "none";
-                return;
-            }
-
-            checkoutBtn.style.display = "block";
-            container.innerHTML = "";
-            items.forEach(item => {
-                const card = document.createElement("div");
-                card.className = "order-card";
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div>
-                            <strong>Größe:</strong> ${item.size} | <strong>Farbe:</strong> ${item.color}
-                            ${item.notes ? `<div style="margin-top:5px; font-size:13px; color:#555;">Notiz: ${item.notes}</div>` : ''}
-                        </div>
-                        <button onclick="removeFromCart(${item.id})" class="button button-light" style="padding: 5px 10px; min-height:30px; font-size:12px;">Entfernen</button>
-                    </div>
-                    ${item.image_url ? `<img src="${item.image_url}" style="max-height: 100px; margin-top:10px; border-radius:8px;">` : ''}
-                `;
-                container.appendChild(card);
-            });
-        }
-    } catch(e) {
-        container.innerHTML = "Fehler beim Laden des Warenkorbs.";
+    if (cart.length === 0) {
+        container.innerHTML = "Dein Warenkorb ist leer.";
+        checkoutBtn.style.display = "none";
+        return;
     }
-}
 
-async function removeFromCart(id) {
-    try {
-        const res = await fetch(`/api/cart/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-            showToast("Artikel entfernt");
-            await loadCart();
-            renderCart();
-        }
-    } catch(e) {}
+    checkoutBtn.style.display = "block";
+    container.innerHTML = "";
+    cart.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <strong>${item.product_name}</strong><br>
+                    <small>Größe: ${item.size || '-'} | Farbe: ${item.color || '-'}</small>
+                    ${item.notes ? `<div style="margin-top:5px; font-size:13px; color:#555;">Notiz: ${item.notes}</div>` : ''}
+                </div>
+                <button onclick="removeFromCart(${item.id})" class="button button-light" style="padding: 5px 10px; min-height:30px; font-size:12px;">Entfernen</button>
+            </div>
+            ${item.screenshot_id ? `<img src="/uploads/${item.screenshot_id}" style="max-height: 100px; margin-top:10px; border-radius:8px;">` : ''}
+        `;
+        container.appendChild(card);
+    });
 }
 
 async function checkoutCart() {
@@ -106,25 +94,19 @@ async function checkoutCart() {
     btn.textContent = "Wird verarbeitet...";
 
     try {
-        const res = await fetch("/api/cart/checkout", { method: "POST" });
-        if (res.ok) {
-            showToast("Bestellung erfolgreich!");
-            await loadCart();
-            setTimeout(() => window.location.href = "/orders.html", 1000);
-        } else {
-            const data = await res.json();
-            showToast(data.detail || "Fehler beim Checkout");
-            btn.disabled = false;
-            btn.textContent = "Kostenpflichtig bestellen";
-        }
+        await api("/api/orders/checkout", { method: "POST" });
+        showToast("Bestellung erfolgreich!", "success");
+        await loadCart();
+        setTimeout(() => window.location.href = "/orders.html", 1000);
     } catch(e) {
-        showToast("Fehler beim Checkout");
+        showToast(e.message, "error");
         btn.disabled = false;
         btn.textContent = "Kostenpflichtig bestellen";
     }
 }
 
 window.onUserLoaded = renderCart;
+
 </script>
 </body>
 </html>

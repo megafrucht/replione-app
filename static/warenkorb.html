@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replione – Warenkorb</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            repl<span>i</span>one
+        </a>
+
+        <nav class="desktop-navigation">
+            <a href="index.html">Startseite</a>
+            <a href="bestellen.html">Bestellen</a>
+            <a href="bestellungen.html">Meine Bestellungen</a>
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="warenkorb.html" class="cart-button active-button">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count">0</span>
+            </a>
+
+            <a href="account.html" class="account-button">
+                <span class="user-icon">👤</span>
+            </a>
+
+            <button class="burger-button" id="burgerButton">
+                <span class="burger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+</header>
+
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <div class="mobile-menu-header">
+        <strong>Menü</strong>
+        <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+    </div>
+
+    <nav>
+        <a href="index.html">Startseite</a>
+        <a href="bestellen.html">Bestellen</a>
+        <a href="warenkorb.html">Warenkorb</a>
+        <a href="bestellungen.html">Meine Bestellungen</a>
+        <a href="account.html">Mein Konto</a>
+    </nav>
+
+</div>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+
+
+<main>
+
+<section class="page-header">
+
+    <div class="eyebrow">Deine Produkte</div>
+
+    <h1>
+        Warenkorb
+    </h1>
+
+    <p>
+        Überprüfe deine Produkte, bevor du die Bestellung abschickst.
+    </p>
+
+</section>
+
+
+<section class="cart-layout">
+
+    <div>
+
+        <div id="cartItems" class="cart-items">
+            <!-- Wird durch cart.js gefüllt -->
+        </div>
+
+        <div id="emptyCart" class="empty-state" hidden>
+
+            <div class="empty-icon">🛒</div>
+
+            <h2>
+                Dein Warenkorb ist leer.
+            </h2>
+
+            <p>
+                Füge zuerst ein Produkt hinzu.
+            </p>
+
+            <a href="bestellen.html" class="button button-primary">
+                Produkt hinzufügen
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <aside class="checkout-card">
+
+        <div class="checkout-card-title">
+            Bestellung
+        </div>
+
+        <div class="checkout-row">
+            <span>Produkte</span>
+            <strong id="cartTotalItems">0</strong>
+        </div>
+
+        <div class="checkout-row">
+            <span>Zahlungsart</span>
+            <strong>Barzahlung</strong>
+        </div>
+
+        <div class="checkout-divider"></div>
+
+        <p class="checkout-note">
+            Die Bestellung wird nach dem Absenden von Replione bearbeitet.
+        </p>
+
+        <button
+            id="checkoutButton"
+            class="button button-primary button-full"
+        >
+            Bestellung absenden
+        </button>
+
+    </aside>
+
+</section>
+
+</main>
+
+
+<footer class="site-footer">
+    <div class="footer-inner">
+
+        <div class="footer-brand">
+            <a href="index.html" class="logo">
+                repl<span>i</span>one
+            </a>
+            <p>Einfach Produkte vermitteln.</p>
+        </div>
+
+    </div>
+</footer>
+
+
+<script src="js/navigation.js"></script>
+<script src="js/cart.js"></script>
+
+</body>
+</html>

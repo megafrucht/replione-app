@@ -50,10 +50,18 @@ PAYMENT_STATUSES = {
     "offen",
     "bezahlt",
 }
+from sqlalchemy import text
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) NOT NULL DEFAULT '';"))
+    except Exception as e:
+        print("Schema update failed or already applied:", e)
     yield
+
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,

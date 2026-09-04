@@ -58,10 +58,31 @@ async def lifespan(app: FastAPI):
     try:
         with engine.begin() as conn:
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) NOT NULL DEFAULT '';"))
+    except: pass
+    try:
+        with engine.begin() as conn:
             conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS email_status VARCHAR(50) NOT NULL DEFAULT 'pending';"))
+    except: pass
+    try:
+        with engine.begin() as conn:
             conn.execute(text("ALTER TABLE order_items ADD COLUMN IF NOT EXISTS screenshot_path TEXT NOT NULL DEFAULT '';"))
-    except Exception as e:
-        print("Schema update failed or already applied:", e)
+    except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE orders DROP COLUMN IF EXISTS order_number;"))
+    except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE orders DROP COLUMN IF EXISTS items;"))
+    except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE order_items DROP COLUMN IF EXISTS screenshot_id;"))
+    except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE cart_items DROP COLUMN IF EXISTS screenshot_id;"))
+    except: pass
     yield
 
 app = FastAPI(

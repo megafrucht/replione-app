@@ -55,6 +55,7 @@ async def upload_screenshot(
     filename = f"{uuid.uuid4().hex}.{extension}"
     path = f"users/{user_id}/{filename}"
     supabase = get_supabase()
+    import logging
     try:
         supabase.storage.from_(
             settings.SUPABASE_STORAGE_BUCKET
@@ -63,13 +64,14 @@ async def upload_screenshot(
             data,
             {
                 "content-type": upload.content_type,
-                "upsert": False,
+                "upsert": "false",
             },
         )
     except Exception as exc:
+        logging.exception(f"Supabase Storage Upload Error for path {path}:")
         raise HTTPException(
             status_code=500,
-            detail=f"Upload fehlgeschlagen: {exc}",
+            detail="Fehler beim Hochladen des Screenshots.",
         )
     return path
 def download_screenshot(path: str) -> bytes:

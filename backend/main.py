@@ -278,9 +278,20 @@ async def add_cart_item(
         notes=notes.strip() if notes else None,
         screenshot_path=screenshot_path,
     )
-    db.add(item)
-    db.commit()
-    db.refresh(item)
+    import logging
+    try:
+        db.add(item)
+        db.commit()
+        db.refresh(item)
+    except Exception as exc:
+        db.rollback()
+        logging.exception("Database INSERT Error for cart item:")
+        from .storage import delete_screenshot
+        delete_screenshot(screenshot_path)
+        raise HTTPException(
+            status_code=500,
+            detail="Fehler beim Speichern des Artikels in der Datenbank.",
+        )
     return {
         "success": True,
         "item": {

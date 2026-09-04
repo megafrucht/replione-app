@@ -2,7 +2,6 @@ import io
 import uuid
 from fastapi import HTTPException, UploadFile
 from PIL import Image
-from supabase import create_client
 from .config import settings
 ALLOWED_MIME_TYPES = {
     "image/jpeg": "jpg",
@@ -10,6 +9,8 @@ ALLOWED_MIME_TYPES = {
     "image/webp": "webp",
 }
 MAX_FILE_SIZE = 8 * 1024 * 1024
+from supabase import create_client, ClientOptions
+
 def get_supabase():
     if not settings.SUPABASE_URL:
         raise RuntimeError(
@@ -19,9 +20,32 @@ def get_supabase():
         raise RuntimeError(
             "SUPABASE_SERVICE_ROLE_KEY ist nicht gesetzt."
         )
+
+    # Sicherer Diagnose-Check ohne den Key zu loggen
+    import jwt
+    import logging
+    try:
+        # Ein Supabase-Key ist ein JWT. Wir dekodieren nur den Header/Payload (ohne Signaturprüfung),
+        # um die Rolle zu überprüfen.
+        payload = jwt.decode(settings.SUPABASE_SERVICE_ROLE_KEY, options={"verify_signature": False})
+        role = payload.get("role")
+        if role != "service_role":
+            logging.error(f"DIAGNOSE: Der konfigurierte SUPABASE_SERVICE_ROLE_KEY hat die Rolle '{role}' statt 'service_role'. Uploads werden an RLS scheitern.")
+    except Exception as e:
+        logging.error("DIAGNOSE: SUPABASE_SERVICE_ROLE_KEY ist kein gültiges JWT oder konnte nicht geparst werden.")
+
+    # Explizite Client-Options setzen
+    opts = ClientOptions(
+        headers={
+            "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY}",
+            "apikey": settings.SUPABASE_SERVICE_ROLE_KEY
+        }
+    )
+
     return create_client(
         settings.SUPABASE_URL,
         settings.SUPABASE_SERVICE_ROLE_KEY,
+        options=opts
     )
 async def upload_screenshot(
     upload: UploadFile,

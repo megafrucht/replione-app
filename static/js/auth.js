@@ -170,3 +170,53 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// Auth check on load
+document.addEventListener("DOMContentLoaded", async () => {
+    const isProtectedRoute = window.location.pathname.endsWith("account.html") || window.location.pathname.endsWith("bestellungen.html");
+    const isLoginRoute = window.location.pathname.endsWith("login.html");
+
+    let userState = { authenticated: false };
+
+    try {
+        userState = await getCurrentUser();
+    } catch (e) {}
+
+    if (isProtectedRoute && !userState.authenticated) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    if (isLoginRoute && userState.authenticated) {
+        window.location.href = "account.html";
+        return;
+    }
+
+    const accountLinks = document.querySelectorAll('a[href="account.html"]');
+    const orderLinks = document.querySelectorAll('a[href="bestellungen.html"]');
+
+    if (userState.authenticated) {
+        const userName = userState.user ? userState.user.name : (userState.is_admin ? "Admin" : "Account");
+        accountLinks.forEach(link => {
+            if (link.classList.contains("account-button")) return; // Keep icon
+            link.textContent = userName;
+        });
+    } else {
+        accountLinks.forEach(link => {
+            if (link.classList.contains("account-button")) return;
+            link.textContent = "Login / Registrieren";
+            link.href = "login.html";
+        });
+        orderLinks.forEach(link => {
+            link.style.display = "none";
+        });
+    }
+
+    // Populate account.html real data
+    const accountNameEl = document.getElementById("accountName");
+    const accountEmailEl = document.getElementById("accountEmail");
+    if (accountNameEl && accountEmailEl && userState.user) {
+        accountNameEl.textContent = userState.user.name;
+        accountEmailEl.textContent = userState.user.email;
+    }
+});

@@ -7,15 +7,62 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<header>
-    <a href="index.html" class="logo">repl<span>i</span>one</a>
-    <nav class="desktop-nav">
-        <a href="index.html" class="nav-button">Startseite</a>
-        <a href="bestellen.html" class="nav-button primary">Bestellen</a>
-        <a href="bestellungen.html" class="nav-button">Meine Bestellungen</a>
-        <a href="account.html" id="navAccount" class="account-button">Konto</a>
-    </nav>
+<header class="site-header">
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            repl<span>i</span>one
+        </a>
+
+        <nav class="desktop-navigation">
+            <a href="index.html" class="active">Startseite</a>
+            <a href="bestellen.html">Bestellen</a>
+            <a href="bestellungen.html">Meine Bestellungen</a>
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="warenkorb.html" class="cart-button" aria-label="Warenkorb">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count" data-cart-count>0</span>
+            </a>
+
+            <a href="account.html" class="account-button" aria-label="Mein Account">
+                <span class="user-icon">👤</span>
+            </a>
+
+            <button class="burger-button" id="burgerButton" aria-label="Menü öffnen" data-menu-toggle>
+                <span class="burger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+
+        </div>
+
+    </div>
 </header>
+
+<div class="mobile-menu" id="mobileMenu" data-side-menu>
+
+    <div class="mobile-menu-header">
+        <strong>Menü</strong>
+        <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+    </div>
+
+    <nav>
+        <a href="index.html" class="active">Startseite</a>
+        <a href="bestellen.html">Bestellen</a>
+        <a href="warenkorb.html">Warenkorb</a>
+        <a href="bestellungen.html">Meine Bestellungen</a>
+        <a href="account.html">Mein Konto</a>
+    </nav>
+
+</div>
+
+<div class="menu-overlay" id="menuOverlay" data-menu-overlay></div>
+
 
 <main>
     <section class="hero">

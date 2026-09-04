@@ -8,8 +8,16 @@ def create_database_engine():
         raise RuntimeError(
             "DATABASE_URL ist nicht gesetzt."
         )
+    db_url = settings.DATABASE_URL
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
+    elif db_url.startswith("postgresql://"):
+        db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    elif db_url.startswith("postgresql+psycopg2://"):
+        db_url = db_url.replace("postgresql+psycopg2://", "postgresql+psycopg://", 1)
+
     return create_engine(
-        settings.DATABASE_URL,
+        db_url,
         pool_pre_ping=True,
     )
 engine = create_database_engine()

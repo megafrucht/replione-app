@@ -286,7 +286,6 @@ async def add_cart_item(
     except Exception as exc:
         db.rollback()
         logging.exception("Database INSERT Error for cart item:")
-        from .storage import delete_screenshot
         delete_screenshot(screenshot_path)
         raise HTTPException(
             status_code=500,

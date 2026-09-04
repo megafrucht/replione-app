@@ -22,30 +22,24 @@ def get_supabase():
         )
 
     # Sicherer Diagnose-Check ohne den Key zu loggen
-    import jwt
     import logging
-    try:
-        # Ein Supabase-Key ist ein JWT. Wir dekodieren nur den Header/Payload (ohne Signaturprüfung),
-        # um die Rolle zu überprüfen.
-        payload = jwt.decode(settings.SUPABASE_SERVICE_ROLE_KEY, options={"verify_signature": False})
-        role = payload.get("role")
-        if role != "service_role":
-            logging.error(f"DIAGNOSE: Der konfigurierte SUPABASE_SERVICE_ROLE_KEY hat die Rolle '{role}' statt 'service_role'. Uploads werden an RLS scheitern.")
-    except Exception as e:
-        logging.error("DIAGNOSE: SUPABASE_SERVICE_ROLE_KEY ist kein gültiges JWT oder konnte nicht geparst werden.")
 
-    # Explizite Client-Options setzen
-    opts = ClientOptions(
-        headers={
-            "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY}",
-            "apikey": settings.SUPABASE_SERVICE_ROLE_KEY
-        }
-    )
+    key = settings.SUPABASE_SERVICE_ROLE_KEY
+    if key.startswith("sbp_"):
+        logging.info("DIAGNOSE: Ein Personal Access Token wird verwendet.")
+    elif key.startswith("sb_"):
+        logging.info("DIAGNOSE: Ein neues Supabase Token-Format wird verwendet.")
+    elif key.startswith("eyJ"):
+        logging.info("DIAGNOSE: Ein JWT-Token wird verwendet.")
+    else:
+        logging.info("DIAGNOSE: Ein unbekanntes Token-Format wird verwendet.")
+
+    # We do NOT override ClientOptions headers manually, as supabase 2.18.1 natively uses the key as authorization.
+    # Overriding headers might break the underlying library formatting or conflict with other headers.
 
     return create_client(
         settings.SUPABASE_URL,
-        settings.SUPABASE_SERVICE_ROLE_KEY,
-        options=opts
+        settings.SUPABASE_SERVICE_ROLE_KEY
     )
 async def upload_screenshot(
     upload: UploadFile,

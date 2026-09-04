@@ -634,6 +634,11 @@ def admin_update_payment_status(
         "order_id": order.id,
         "payment_status": order.payment_status,
     }
+import mimetypes
+mimetypes.add_type("text/html", ".html")
+mimetypes.add_type("text/css", ".css")
+mimetypes.add_type("application/javascript", ".js")
+
 app.mount(
     "/",
     StaticFiles(

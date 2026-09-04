@@ -26,14 +26,14 @@
 
             <a href="warenkorb.html" class="cart-button" aria-label="Warenkorb">
                 <span class="cart-icon">🛒</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count" data-cart-count>0</span>
             </a>
 
             <a href="account.html" class="account-button" aria-label="Mein Account">
                 <span class="user-icon">👤</span>
             </a>
 
-            <button class="burger-button" id="burgerButton" aria-label="Menü öffnen">
+            <button class="burger-button" id="burgerButton" data-menu-toggle aria-label="Menü öffnen">
                 <span class="burger-icon">
                     <span></span>
                     <span></span>
@@ -47,7 +47,7 @@
 </header>
 
 
-<div class="mobile-menu" id="mobileMenu">
+<div class="mobile-menu" id="mobileMenu" data-side-menu>
 
     <div class="mobile-menu-header">
         <strong>Menü</strong>
@@ -64,7 +64,7 @@
 
 </div>
 
-<div class="menu-overlay" id="menuOverlay"></div>
+<div class="menu-overlay" id="menuOverlay" data-menu-overlay></div>
 
 
 <main>
@@ -88,7 +88,7 @@
 
     <div class="form-card">
 
-        <form id="orderForm">
+        <form id="orderForm" data-order-form>
 
             <div class="form-section">
 
@@ -107,7 +107,7 @@
                     <input
                         type="text"
                         id="productName"
-                        name="productName"
+                        name="product_name"
                         placeholder="z. B. Schwarzer Hoodie"
                         required
                     >
@@ -129,7 +129,7 @@
                     <input
                         type="url"
                         id="productLink"
-                        name="productLink"
+                        name="product_link"
                         placeholder="https://..."
                     >
 
@@ -148,7 +148,7 @@
                         <input
                             type="text"
                             id="productSize"
-                            name="productSize"
+                            name="size"
                             placeholder="z. B. L"
                         >
 
@@ -165,7 +165,7 @@
                         <input
                             type="text"
                             id="productColor"
-                            name="productColor"
+                            name="color"
                             placeholder="z. B. Schwarz"
                         >
 
@@ -195,7 +195,7 @@
                         <input
                             type="file"
                             id="productScreenshot"
-                            name="productScreenshot"
+                            name="screenshot"
                             accept="image/jpeg,image/png,image/webp"
                             required
                         >
@@ -218,7 +218,7 @@
 
 
                 <div
-                    class="image-preview"
+                    class="image-preview" data-screenshot-preview
                     id="imagePreview"
                     hidden
                 >
@@ -248,7 +248,7 @@
 
                     <textarea
                         id="productNotes"
-                        name="productNotes"
+                        name="notes"
                         rows="5"
                         placeholder="Gibt es etwas, das wir wissen sollten?"
                     ></textarea>

@@ -26,12 +26,13 @@ from .auth import (
 )
 from .config import settings
 from .database import Base, engine, get_db
-from .email_bot import send_order_email
+from .email_bot import send_order_email, send_admin_contact_email
 from .schemas import (
     OrderStatusUpdate,
     PaymentStatusUpdate,
     UserLogin,
     UserRegister,
+    ContactRequest,
 )
 from .storage import (
     delete_screenshot,
@@ -684,6 +685,49 @@ import mimetypes
 mimetypes.add_type("text/html", ".html")
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/javascript", ".js")
+
+@app.post("/api/admin/orders/{order_id}/contact")
+def admin_contact_order(
+    order_id: int,
+    data: ContactRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    require_admin(request, db)
+    order = db.get(models.Order, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Bestellung nicht gefunden.")
+
+    success = send_admin_contact_email(
+        recipient=order.user.email,
+        subject=data.subject,
+        body=data.message,
+        customer_name=order.user.name
+    )
+    if not success:
+        raise HTTPException(status_code=500, detail="E-Mail konnte nicht gesendet werden. SMTP Fehler.")
+    return {"success": True}
+
+@app.get("/api/admin/users")
+def admin_users(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    require_admin(request, db)
+    users = db.query(models.User).order_by(models.User.created_at.desc()).all()
+
+    from sqlalchemy import func
+    return {
+        "users": [
+            {
+                "id": u.id,
+                "name": u.name,
+                "email": u.email,
+                "created_at": u.created_at,
+                "order_count": db.query(func.count(models.Order.id)).filter(models.Order.user_id == u.id).scalar()
+            } for u in users
+        ]
+    }
 
 app.mount(
     "/",

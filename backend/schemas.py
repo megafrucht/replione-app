@@ -43,3 +43,7 @@ class OrderStatusUpdate(BaseModel):
     status: str
 class PaymentStatusUpdate(BaseModel):
     payment_status: str
+
+class ContactRequest(BaseModel):
+    subject: str
+    message: str

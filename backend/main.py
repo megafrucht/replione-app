@@ -58,6 +58,8 @@ async def lifespan(app: FastAPI):
     try:
         with engine.begin() as conn:
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) NOT NULL DEFAULT '';"))
+            conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS email_status VARCHAR(50) NOT NULL DEFAULT 'pending';"))
+            conn.execute(text("ALTER TABLE order_items ADD COLUMN IF NOT EXISTS screenshot_path TEXT NOT NULL DEFAULT '';"))
     except Exception as e:
         print("Schema update failed or already applied:", e)
     yield
@@ -436,21 +438,26 @@ def checkout(
         for cart_item in cart_items:
             db.delete(cart_item)
         db.commit()
-    except Exception:
+    except Exception as exc:
         db.rollback()
+        import logging
+        logging.exception("Checkout DB Error:")
         raise HTTPException(
             status_code=500,
             detail="Bestellung konnte nicht erstellt werden.",
         )
-    email_sent = send_order_email(
-        recipient=user.email,
-        order_id=order.id,
-        customer_name=user.name,
-    )
-    order.email_status = (
-        "sent" if email_sent else "failed"
-    )
-    db.commit()
+    try:
+        email_sent = send_order_email(
+            recipient=user.email,
+            order_id=order.id,
+            customer_name=user.name,
+        )
+        order.email_status = "sent" if email_sent else "failed"
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        import logging
+        logging.exception("Checkout Email Update Error:")
     return {
         "success": True,
         "order_id": order.id,

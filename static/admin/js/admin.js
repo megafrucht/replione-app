@@ -198,8 +198,33 @@ async function openOrder(id) {
     modal.hidden = false;
 }
 
-document.getElementById("closeOrderModal")?.addEventListener("click", () => document.getElementById("orderModal").hidden = true);
-document.getElementById("closeContactModal")?.addEventListener("click", () => document.getElementById("contactModal").hidden = true);
+
+function closeModals() {
+    document.getElementById("orderModal").hidden = true;
+    const contactModal = document.getElementById("contactModal");
+    if (!contactModal.hidden) {
+        contactModal.hidden = true;
+        document.getElementById("contactForm")?.reset();
+        document.getElementById("contactMessageAlert").hidden = true;
+    }
+}
+
+document.getElementById("closeOrderModal")?.addEventListener("click", closeModals);
+document.getElementById("closeContactModal")?.addEventListener("click", closeModals);
+document.getElementById("cancelContactModal")?.addEventListener("click", closeModals);
+
+// Close on Escape
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModals();
+});
+
+// Close on Overlay Click
+document.querySelectorAll(".modal-overlay").forEach(overlay => {
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) closeModals();
+    });
+});
+
 
 async function updateStatus(id, newStatus) {
     try {
@@ -233,6 +258,7 @@ function openContactModal(id) {
     document.getElementById("contactModal").hidden = false;
 }
 
+
 const contactForm = document.getElementById("contactForm");
 if (contactForm) {
     contactForm.addEventListener("submit", async (e) => {
@@ -241,18 +267,18 @@ if (contactForm) {
         const subject = document.getElementById("contactSubject").value;
         const message = document.getElementById("contactMessage").value;
         const alertBox = document.getElementById("contactMessageAlert");
-        const btn = e.target.querySelector("button");
+        const btn = e.target.querySelector("button[type='submit']");
 
         btn.disabled = true;
         btn.textContent = "Sende...";
+        alertBox.hidden = true;
         try {
             await apiRequest(`/orders/${id}/contact`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({subject, message})
             });
-            document.getElementById("contactModal").hidden = true;
-            e.target.reset();
+            closeModals();
             alert("E-Mail wurde gesendet.");
         } catch (err) {
             alertBox.textContent = err.message;
@@ -262,28 +288,6 @@ if (contactForm) {
             btn.textContent = "E-Mail senden";
         }
     });
-}
-
-async function loadUsers() {
-    try {
-        const data = await apiRequest("/users");
-        const tbody = document.getElementById("usersTbody");
-        if(data.users.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">Keine Kunden gefunden.</td></tr>`;
-            return;
-        }
-        tbody.innerHTML = data.users.map(u => `
-            <tr>
-                <td>#${u.id}</td>
-                <td>${escapeHtml(u.name)}</td>
-                <td>${escapeHtml(u.email)}</td>
-                <td>${new Date(u.created_at).toLocaleDateString()}</td>
-                <td>${u.order_count}</td>
-            </tr>
-        `).join("");
-    } catch (e) {
-        document.getElementById("usersTbody").innerHTML = `<tr><td colspan="5" class="error">${e.message}</td></tr>`;
-    }
 }
 
 function escapeHtml(value) {

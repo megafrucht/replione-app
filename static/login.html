@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Replione – Login</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
@@ -26,14 +26,14 @@
 
             <a href="warenkorb.html" class="cart-button">
                 <span class="cart-icon">🛒</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count" data-cart-count>0</span>
             </a>
 
             <a href="account.html" class="account-button">
                 <span class="user-icon">👤</span>
             </a>
 
-            <button class="burger-button" id="burgerButton">
+            <button class="burger-button" id="burgerButton" data-menu-toggle>
                 <span class="burger-icon">
                     <span></span>
                     <span></span>
@@ -47,7 +47,7 @@
 </header>
 
 
-<div class="mobile-menu" id="mobileMenu">
+<div class="mobile-menu" id="mobileMenu" data-side-menu>
 
     <div class="mobile-menu-header">
         <strong>Menü</strong>
@@ -64,7 +64,7 @@
 
 </div>
 
-<div class="menu-overlay" id="menuOverlay"></div>
+<div class="menu-overlay" id="menuOverlay" data-menu-overlay></div>
 
 
 <main>
@@ -90,7 +90,7 @@
 
         <!-- LOGIN -->
 
-        <form id="loginForm">
+        <form id="loginForm" data-auth-form="login">
 
             <div class="form-group">
 
@@ -100,7 +100,7 @@
 
                 <input
                     type="email"
-                    id="loginEmail"
+                    id="loginEmail" name="email"
                     required
                     placeholder="deine@email.de"
                 >
@@ -116,7 +116,7 @@
 
                 <input
                     type="password"
-                    id="loginPassword"
+                    id="loginPassword" name="password"
                     required
                     placeholder="••••••••"
                 >
@@ -133,7 +133,7 @@
 
         <!-- REGISTER -->
 
-        <form id="registerForm" hidden>
+        <form id="registerForm" data-auth-form="register" hidden>
 
             <div class="form-group">
 
@@ -143,7 +143,7 @@
 
                 <input
                     type="text"
-                    id="registerName"
+                    id="registerName" name="name"
                     required
                     placeholder="Dein Name"
                 >
@@ -159,7 +159,7 @@
 
                 <input
                     type="email"
-                    id="registerEmail"
+                    id="registerEmail" name="email"
                     required
                     placeholder="deine@email.de"
                 >
@@ -175,7 +175,7 @@
 
                 <input
                     type="password"
-                    id="registerPassword"
+                    id="registerPassword" name="password"
                     required
                     placeholder="••••••••"
                 >
@@ -203,7 +203,7 @@
         </div>
 
 
-        <div id="authMessage" class="form-message" hidden></div>
+        <div id="authMessage" class="form-message" data-auth-message hidden></div>
 
     </div>
 
@@ -212,9 +212,9 @@
 </main>
 
 
-<script src="js/navigation.js"></script>
-<script src="js/cart.js"></script>
-<script src="js/auth.js"></script>
+<script src="/js/navigation.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
 
 </body>
 </html>

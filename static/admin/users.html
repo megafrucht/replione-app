@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replione Admin – Kunden</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <a href="index.html" class="logo">
+            repl<span>i</span>one <small>Admin</small>
+        </a>
+        <nav class="desktop-navigation">
+            <a href="index.html">Bestellungen</a>
+            <a href="users.html" class="active">Kunden</a>
+            <a href="#" id="adminLogoutBtn">Logout</a>
+        </nav>
+        <div class="header-actions">
+            <button class="burger-button" id="burgerButton" data-menu-toggle>
+                <span class="burger-icon">
+                    <span></span><span></span><span></span>
+                </span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" data-side-menu>
+    <div class="mobile-menu-header">
+        <strong>Admin Menü</strong>
+        <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+    </div>
+    <nav>
+        <a href="index.html">Bestellungen</a>
+        <a href="users.html">Kunden</a>
+        <a href="#" id="adminLogoutBtnMobile">Logout</a>
+    </nav>
+</div>
+<div class="menu-overlay" id="menuOverlay" data-menu-overlay></div>
+
+<main class="admin-main">
+    <section class="page-header">
+        <div class="eyebrow">Dashboard</div>
+        <h1>Kundenübersicht</h1>
+    </section>
+
+    <section class="orders-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>E-Mail</th>
+                    <th>Registriert am</th>
+                    <th>Bestellungen</th>
+                </tr>
+            </thead>
+            <tbody id="usersTbody">
+                <tr><td colspan="5" style="text-align: center;">Lade Kunden...</td></tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<script src="/js/navigation.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

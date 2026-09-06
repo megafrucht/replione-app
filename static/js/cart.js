@@ -34,6 +34,10 @@ function updateCartBadge(count) {
             element.textContent = count;
             element.hidden = count === 0;
         });
+    const totalItemsElem = document.getElementById("cartTotalItems");
+    if (totalItemsElem) {
+        totalItemsElem.textContent = count;
+    }
 }
 function escapeHtml(value) {
     const div = document.createElement("div");

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replione Admin – Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<main class="admin-login-layout">
+    <div class="auth-card">
+        <div class="auth-heading">
+            <div class="eyebrow">Replione Admin</div>
+            <h1>Admin Login</h1>
+        </div>
+
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="adminPassword">Passwort</label>
+                <input type="password" id="adminPassword" name="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="button button-primary button-full">Login</button>
+        </form>
+
+        <div id="authMessage" class="form-message" hidden></div>
+    </div>
+</main>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

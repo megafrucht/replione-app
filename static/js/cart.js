@@ -1,204 +1,164 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    const STORAGE_KEY = "replione_demo_cart";
-
-
-    function getCart() {
-
-        try {
-            return JSON.parse(
-                localStorage.getItem(STORAGE_KEY)
-            ) || [];
-        } catch {
-            return [];
-        }
-
+const CART_API = "/api";
+async function cartRequest(url, options = {}) {
+    const response = await fetch(`${CART_API}${url}`, {
+        credentials: "include",
+        ...options,
+    });
+    let data = null;
+    try {
+        data = await response.json();
+    } catch {
+        data = null;
     }
-
-
-    function saveCart(cart) {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(cart)
+    if (!response.ok) {
+        throw new Error(
+            data?.detail || "Fehler beim Warenkorb."
         );
-
     }
-
-
-    function updateCartBadges() {
-
-        const cart = getCart();
-
-        document.querySelectorAll(".cart-count").forEach((badge) => {
-            badge.textContent = cart.length;
+    return data;
+}
+async function loadCart() {
+    try {
+        const data = await cartRequest("/cart");
+        updateCartBadge(data.items.length);
+        return data.items;
+    } catch {
+        updateCartBadge(0);
+        return [];
+    }
+}
+function updateCartBadge(count) {
+    document
+        .querySelectorAll("[data-cart-count]")
+        .forEach((element) => {
+            element.textContent = count;
+            element.hidden = count === 0;
         });
-
+}
+function escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = value ?? "";
+    return div.innerHTML;
+}
+function renderCart(items) {
+    const container =
+        document.querySelector("[data-cart-list]");
+    const empty =
+        document.querySelector("[data-cart-empty]");
+    if (!container) {
+        return;
     }
-
-
-    function escapeHTML(value) {
-
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-
+    container.innerHTML = "";
+    if (!items.length) {
+        if (empty) {
+            empty.hidden = false;
+        }
+        return;
     }
-
-
-    function renderCartPage() {
-
-        const container = document.getElementById("cartItems");
-
-        if (!container) {
-            return;
-        }
-
-
-        const emptyCart = document.getElementById("emptyCart");
-
-        const totalItems = document.getElementById("cartTotalItems");
-
-        const cart = getCart();
-
-
-        if (totalItems) {
-            totalItems.textContent = cart.length;
-        }
-
-
-        if (cart.length === 0) {
-
-            container.innerHTML = "";
-
-            if (emptyCart) {
-                emptyCart.hidden = false;
-            }
-
-            return;
-        }
-
-
-        if (emptyCart) {
-            emptyCart.hidden = true;
-        }
-
-
-        container.innerHTML = cart.map((item, index) => {
-
-            const image = item.image || "";
-
-            return `
-                <article class="cart-item">
-
-                    <div class="cart-item-image">
-
-                        ${
-                            image
-                                ? `<img src="${image}" alt="Produkt Screenshot">`
-                                : `<span style="font-size:40px;display:flex;align-items:center;justify-content:center;height:100%;">📦</span>`
-                        }
-
-                    </div>
-
-
-                    <div class="cart-item-info">
-
-                        <h3>
-                            ${escapeHTML(item.name)}
-                        </h3>
-
-                        <p>
-                            ${escapeHTML(item.notes || "Keine zusätzlichen Hinweise")}
-                        </p>
-
-
-                        <div class="cart-item-meta">
-
-                            ${
-                                item.size
-                                    ? `<span class="meta-tag">Größe: ${escapeHTML(item.size)}</span>`
-                                    : ""
+    if (empty) {
+        empty.hidden = true;
+    }
+    items.forEach((item) => {
+        const article =
+            document.createElement("article");
+        article.className = "cart-item";
+        article.innerHTML = `
+            <div class="cart-item-content">
+                <h3>${escapeHtml(item.product_name)}</h3>
+                ${
+                    item.size
+                        ? `<p><strong>Größe:</strong> ${escapeHtml(item.size)}</p>`
+                        : ""
+                }
+                ${
+                    item.color
+                        ? `<p><strong>Farbe:</strong> ${escapeHtml(item.color)}</p>`
+                        : ""
+                }
+                ${
+                    item.notes
+                        ? `<p><strong>Notiz:</strong> ${escapeHtml(item.notes)}</p>`
+                        : ""
+                }
+                ${
+                    item.product_link
+                        ? `<a href="${escapeHtml(item.product_link)}"
+                              target="_blank"
+                              rel="noopener noreferrer">
+                              Produkt öffnen
+                           </a>`
+                        : ""
+                }
+            </div>
+            <button
+                type="button"
+                class="button button-secondary"
+                data-remove-cart="${item.id}"
+            >
+                Entfernen
+            </button>
+        `;
+        container.appendChild(article);
+    });
+    container
+        .querySelectorAll("[data-remove-cart]")
+        .forEach((button) => {
+            button.addEventListener(
+                "click",
+                async () => {
+                    const id =
+                        button.dataset.removeCart;
+                    try {
+                        await cartRequest(
+                            `/cart/items/${id}`,
+                            {
+                                method: "DELETE",
                             }
-
-                            ${
-                                item.color
-                                    ? `<span class="meta-tag">Farbe: ${escapeHTML(item.color)}</span>`
-                                    : ""
-                            }
-
-                            ${
-                                item.link
-                                    ? `<span class="meta-tag">Link vorhanden</span>`
-                                    : ""
-                            }
-
-                        </div>
-
-                    </div>
-
-
-                    <button
-                        class="cart-item-remove"
-                        data-index="${index}"
-                        aria-label="Produkt entfernen"
-                    >
-                        ✕
-                    </button>
-
-                </article>
-            `;
-
-        }).join("");
-
-
-        container
-            .querySelectorAll(".cart-item-remove")
-            .forEach((button) => {
-
-                button.addEventListener("click", () => {
-
-                    const index = Number(button.dataset.index);
-
-                    removeFromCart(index);
-
-                });
-
-            });
-
+                        );
+                        await refreshCart();
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                }
+            );
+        });
+}
+async function refreshCart() {
+    const items = await loadCart();
+    renderCart(items);
+}
+async function checkout() {
+    const button =
+        document.querySelector("[data-checkout]");
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Wird übermittelt …";
     }
-
-
-    function removeFromCart(index) {
-
-        const cart = getCart();
-
-        cart.splice(index, 1);
-
-        saveCart(cart);
-
-        updateCartBadges();
-
-        renderCartPage();
-
+    try {
+        const result =
+            await cartRequest(
+                "/orders/checkout",
+                {
+                    method: "POST",
+                }
+            );
+        window.location.href =
+            `bestellungen.html?order=${result.order_id}`;
+    } catch (error) {
+        alert(error.message);
+        if (button) {
+            button.disabled = false;
+            button.textContent =
+                "Bestellung abschicken";
+        }
     }
-
-
-    window.replioneCart = {
-
-        getCart,
-        saveCart,
-        updateCartBadges,
-        renderCartPage
-
-    };
-
-
-    updateCartBadges();
-
-    renderCartPage();
-
+}
+document.addEventListener("DOMContentLoaded", async () => {
+    await refreshCart();
+    document
+        .querySelector("[data-checkout]")
+        ?.addEventListener(
+            "click",
+            checkout
+        );
 });

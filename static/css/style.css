@@ -113,9 +113,9 @@ textarea {
 
 .logo img {
     display: block;
-    height: 20px;
+    height: 30px;
     width: auto;
-    max-width: 180px;
+    max-width: 300px;
     object-fit: contain;
 }
 

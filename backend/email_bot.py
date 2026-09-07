@@ -33,19 +33,33 @@ Replione
 """
     )
     try:
-        with smtplib.SMTP(
-            settings.SMTP_HOST,
-            settings.SMTP_PORT,
-            timeout=15,
-        ) as smtp:
-            smtp.starttls()
-            smtp.login(
-                settings.SMTP_USER,
-                settings.SMTP_PASSWORD,
-            )
-            smtp.send_message(message)
+        if settings.SMTP_PORT == 465:
+            with smtplib.SMTP_SSL(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=15,
+            ) as smtp:
+                smtp.login(
+                    settings.SMTP_USER,
+                    settings.SMTP_PASSWORD,
+                )
+                smtp.send_message(message)
+        else:
+            with smtplib.SMTP(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=15,
+            ) as smtp:
+                smtp.starttls()
+                smtp.login(
+                    settings.SMTP_USER,
+                    settings.SMTP_PASSWORD,
+                )
+                smtp.send_message(message)
         return True
     except Exception:
+        import logging
+        logging.exception("Failed to send order email")
         return False
 
 def send_admin_contact_email(
@@ -72,17 +86,29 @@ def send_admin_contact_email(
     message.set_content(full_body)
 
     try:
-        with smtplib.SMTP(
-            settings.SMTP_HOST,
-            settings.SMTP_PORT,
-            timeout=15,
-        ) as smtp:
-            smtp.starttls()
-            smtp.login(
-                settings.SMTP_USER,
-                settings.SMTP_PASSWORD,
-            )
-            smtp.send_message(message)
+        if settings.SMTP_PORT == 465:
+            with smtplib.SMTP_SSL(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=15,
+            ) as smtp:
+                smtp.login(
+                    settings.SMTP_USER,
+                    settings.SMTP_PASSWORD,
+                )
+                smtp.send_message(message)
+        else:
+            with smtplib.SMTP(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=15,
+            ) as smtp:
+                smtp.starttls()
+                smtp.login(
+                    settings.SMTP_USER,
+                    settings.SMTP_PASSWORD,
+                )
+                smtp.send_message(message)
         return True
     except Exception:
         import logging

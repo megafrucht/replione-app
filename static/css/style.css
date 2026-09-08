@@ -1197,6 +1197,8 @@ textarea {
 
     display: flex;
 
+    align-items: center;
+
     gap: 18px;
 }
 

@@ -1,4 +1,5 @@
 const CART_API = "/api";
+
 async function cartRequest(url, options = {}) {
     const response = await fetch(`${CART_API}${url}`, {
         credentials: "include",
@@ -17,6 +18,7 @@ async function cartRequest(url, options = {}) {
     }
     return data;
 }
+
 async function loadCart() {
     try {
         const data = await cartRequest("/cart");
@@ -27,6 +29,7 @@ async function loadCart() {
         return [];
     }
 }
+
 function updateCartBadge(count) {
     document
         .querySelectorAll("[data-cart-count]")
@@ -39,11 +42,13 @@ function updateCartBadge(count) {
         totalItemsElem.textContent = count;
     }
 }
+
 function escapeHtml(value) {
     const div = document.createElement("div");
     div.textContent = value ?? "";
     return div.innerHTML;
 }
+
 function renderCart(items) {
     const container =
         document.querySelector("[data-cart-list]");
@@ -94,6 +99,11 @@ function renderCart(items) {
                         : ""
                 }
             </div>
+            <div class="cart-item-image">
+                <img src="${CART_API}/cart/items/${item.id}/screenshot"
+                     alt="${escapeHtml(item.product_name)}"
+                     onerror="this.parentNode.style.display='none'">
+            </div>
             <button
                 type="button"
                 class="button button-secondary"
@@ -127,10 +137,12 @@ function renderCart(items) {
             );
         });
 }
+
 async function refreshCart() {
     const items = await loadCart();
     renderCart(items);
 }
+
 async function checkout() {
     const button =
         document.querySelector("[data-checkout]");
@@ -157,6 +169,7 @@ async function checkout() {
         }
     }
 }
+
 document.addEventListener("DOMContentLoaded", async () => {
     await refreshCart();
     document

@@ -705,7 +705,7 @@ def admin_contact_order(
         customer_name=order.user.name
     )
     if not success:
-        raise HTTPException(status_code=500, detail="E-Mail konnte nicht gesendet werden. SMTP Fehler.")
+        raise HTTPException(status_code=500, detail="E-Mail konnte nicht gesendet werden. Brevo API Fehler.")
     return {"success": True}
 
 @app.get("/api/admin/users")

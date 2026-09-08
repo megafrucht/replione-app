@@ -1,52 +1,71 @@
-import smtplib
-from email.message import EmailMessage
+import logging
+import httpx
 from .config import settings
+
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+
+
 def send_order_email(
     recipient: str,
     order_id: int,
     customer_name: str,
 ) -> bool:
-    if not all(
-        [
-            settings.SMTP_HOST,
-            settings.SMTP_USER,
-            settings.SMTP_PASSWORD,
-            settings.SENDER_EMAIL,
-        ]
-    ):
+    api_key = settings.BREVO_API_KEY
+    sender_email = settings.SENDER_EMAIL
+    if not api_key or not sender_email:
         return False
-    message = EmailMessage()
-    message["Subject"] = (
-        f"Replione – Bestellung #{order_id} eingegangen"
-    )
-    message["From"] = settings.SENDER_EMAIL
-    message["To"] = recipient
-    message.set_content(
-        f"""Hallo {customer_name},
+
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json",
+    }
+    payload = {
+        "sender": {
+            "name": settings.APP_NAME,
+            "email": sender_email,
+        },
+        "to": [
+            {
+                "email": recipient,
+                "name": customer_name,
+            }
+        ],
+        "subject": f"Replione – Bestellung #{order_id} eingegangen",
+        "textContent": f"""Hallo {customer_name},
+
 deine Bestellung bei Replione ist eingegangen.
+
 Bestellnummer: #{order_id}
 Zahlungsart: Barzahlung
 Status: Eingegangen
+
 Wir kümmern uns um die weitere Bearbeitung.
+
 Viele Grüße
 Replione
-"""
-    )
+""",
+    }
+
     try:
-        with smtplib.SMTP(
-            settings.SMTP_HOST,
-            settings.SMTP_PORT,
-            timeout=15,
-        ) as smtp:
-            smtp.starttls()
-            smtp.login(
-                settings.SMTP_USER,
-                settings.SMTP_PASSWORD,
-            )
-            smtp.send_message(message)
-        return True
-    except Exception:
+        response = httpx.post(
+            BREVO_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=15.0,
+        )
+        if response.status_code in (200, 201, 202):
+            return True
+        logging.error(
+            "Brevo API error: status %s, response %s",
+            response.status_code,
+            response.text,
+        )
         return False
+    except Exception:
+        logging.exception("Failed to send order email via Brevo API")
+        return False
+
 
 def send_admin_contact_email(
     recipient: str,
@@ -54,37 +73,47 @@ def send_admin_contact_email(
     body: str,
     customer_name: str,
 ) -> bool:
-    if not all(
-        [
-            settings.SMTP_HOST,
-            settings.SMTP_USER,
-            settings.SMTP_PASSWORD,
-            settings.SENDER_EMAIL,
-        ]
-    ):
+    api_key = settings.BREVO_API_KEY
+    sender_email = settings.SENDER_EMAIL
+    if not api_key or not sender_email:
         return False
-    message = EmailMessage()
-    message["Subject"] = subject
-    message["From"] = settings.SENDER_EMAIL
-    message["To"] = recipient
 
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json",
+    }
     full_body = f"Hallo {customer_name},\n\n{body}\n\nViele Grüße\nReplione"
-    message.set_content(full_body)
+    payload = {
+        "sender": {
+            "name": settings.APP_NAME,
+            "email": sender_email,
+        },
+        "to": [
+            {
+                "email": recipient,
+                "name": customer_name,
+            }
+        ],
+        "subject": subject,
+        "textContent": full_body,
+    }
 
     try:
-        with smtplib.SMTP(
-            settings.SMTP_HOST,
-            settings.SMTP_PORT,
-            timeout=15,
-        ) as smtp:
-            smtp.starttls()
-            smtp.login(
-                settings.SMTP_USER,
-                settings.SMTP_PASSWORD,
-            )
-            smtp.send_message(message)
-        return True
+        response = httpx.post(
+            BREVO_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=15.0,
+        )
+        if response.status_code in (200, 201, 202):
+            return True
+        logging.error(
+            "Brevo API error: status %s, response %s",
+            response.status_code,
+            response.text,
+        )
+        return False
     except Exception:
-        import logging
-        logging.exception("Failed to send admin contact email")
+        logging.exception("Failed to send admin contact email via Brevo API")
         return False

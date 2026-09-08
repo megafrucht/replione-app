@@ -730,6 +730,12 @@ def admin_users(
     }
 
 app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static_dir",
+)
+
+app.mount(
     "/",
     StaticFiles(
         directory="static",

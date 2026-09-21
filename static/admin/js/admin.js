@@ -188,6 +188,7 @@ async function openOrder(id) {
                     ${i.color ? `<br><small>Farbe: ${escapeHtml(i.color)}</small>` : ''}
                     ${i.product_link ? `<br><a href="${escapeHtml(i.product_link)}" target="_blank" style="font-size:12px">Link öffnen</a>` : ''}
                     ${i.notes ? `<br><small>Notiz: ${escapeHtml(i.notes)}</small>` : ''}
+                    <br><a href="${BASE_API}/orders/${order.id}/items/${i.id}/screenshot" target="_blank" download="order-${order.id}-item-${i.id}.png" style="font-size:12px">Bild als PNG herunterladen</a>
                     <br><a href="${BASE_API}/orders/${order.id}/items/${i.id}/screenshot" target="_blank">
                         <img src="${BASE_API}/orders/${order.id}/items/${i.id}/screenshot" alt="Screenshot" onerror="this.style.display='none'">
                     </a>
